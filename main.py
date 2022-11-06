@@ -1,8 +1,8 @@
 import sys
-from PyQt5.QtWidgets import (QMainWindow, QApplication, QScrollArea, QPushButton, QWidget, QLabel,
-                             QPushButton, QMenu, QAction, QFileDialog, QAbstractScrollArea,
+from PyQt5.QtWidgets import (QMainWindow, QApplication, QScrollArea, QLabel,
+                             QPushButton, QMenu, QAction, QFileDialog,
                              QLineEdit)
-from PyQt5 import uic, QtCore
+from PyQt5 import uic
 from PyQt5.QtGui import QPixmap, QColor, QIntValidator, QPen, QPainter
 from PyQt5.QtCore import Qt
 
@@ -282,7 +282,6 @@ class PaintWindow(QMainWindow):
             pxm = self.drawLabel.pixmap()
             print(event.pos())
             qp  = QPainter(pxm)
-            #print(qp.pix)
             qp.setPen(QPen(self.BrushColor, self.BrushSize, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
             qp.drawLine(self.lastPoint, event.pos())
             self.lastPoint = event.pos()
