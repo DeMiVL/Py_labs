@@ -88,9 +88,17 @@
     <addaction name="separator"/>
     <addaction name="InputColor"/>
    </widget>
+   <widget class="QMenu" name="EditMenu">
+    <property name="title">
+     <string>Правка</string>
+    </property>
+    <addaction name="UndoAction"/>
+    <addaction name="RedoAction"/>
+   </widget>
    <addaction name="FileMenu"/>
    <addaction name="BrushMenu"/>
    <addaction name="ColorMenu"/>
+   <addaction name="EditMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="FileAction">
@@ -187,6 +195,16 @@
   <action name="InputColor">
    <property name="text">
     <string>Ввести цвет</string>
+   </property>
+  </action>
+  <action name="UndoAction">
+   <property name="text">
+    <string>Отменить</string>
+   </property>
+  </action>
+  <action name="RedoAction">
+   <property name="text">
+    <string>Повторить</string>
    </property>
   </action>
  </widget>

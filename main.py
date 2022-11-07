@@ -1,20 +1,31 @@
 import sys
+import drawlabui
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QScrollArea, QLabel,
                              QPushButton, QMenu, QAction, QFileDialog,
                              QLineEdit)
-from PyQt5 import uic
 from PyQt5.QtGui import QPixmap, QColor, QIntValidator, QPen, QPainter
 from PyQt5.QtCore import Qt
 
 
-class PaintWindow(QMainWindow):
+class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
     def __init__(self):
         super(PaintWindow, self).__init__()
+        self.setupUi(self)
 
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(False)
 
-        uic.loadUi("DRAWLABUI.ui", self)
+        self.editMenu = self.findChild(QMenu, "EditMenu")
+        self.editMenu.setEnabled(False)
+
+        self.actionUndo = self.findChild(QAction, "UndoAction")
+        self.actionUndo.triggered.connect(self.undoAction)
+        self.actionUndo.setShortcut("Ctrl+Z")
+
+        self.actionRedo = self.findChild(QAction, "RedoAction")
+        self.actionRedo.triggered.connect(self.redoAction)
+        self.actionRedo.setShortcut("Ctrl+Y")
+        self.actionRedo.setEnabled(False)
 
         self.brushMenu = self.findChild(QMenu, "BrushMenu")
         self.brushMenu.setEnabled(False)
@@ -123,8 +134,8 @@ class PaintWindow(QMainWindow):
         self.redInput.setVisible(False)
         self.colorButton.setVisible(False)
 
-        self.BrushColor    = QColor("red")
-        self.BrushSize     = 3
+        self.BrushColor    = QColor("black")
+        self.BrushSize     = 4
 
         self.setWindowTitle("Паинт имени Миляева Д.В.")
         self.show()
@@ -145,7 +156,7 @@ class PaintWindow(QMainWindow):
         self.actionBrushSize4.setEnabled(True)
         self.brushMenu.setEnabled(True)
         self.colorMenu.setEnabled(True)
-        self.PixMapAv = True
+        self.PixMapAv     = True
 
     def saveImage(self):
         filename, _= QFileDialog.getSaveFileName(self, "Save File", "./", "PNG Files (*.png);;JPG Files (*.jpg);;ALL Files (*)")
@@ -171,6 +182,20 @@ class PaintWindow(QMainWindow):
 
     def exitProg(self):
         self.close()
+
+    def undoAction(self):
+        self.actionUndo.setEnabled(False)
+        pxm          = QPixmap().fromImage(self.lastpxm)
+        self.lastpxm = self.drawLabel.pixmap().toImage()
+        self.drawLabel.setPixmap(pxm)
+        self.actionRedo.setEnabled(True)
+
+    def redoAction(self):
+        self.actionRedo.setEnabled(False)
+        pxm          = QPixmap().fromImage(self.lastpxm)
+        self.lastpxm = self.drawLabel.pixmap().toImage()
+        self.drawLabel.setPixmap(pxm)
+        self.actionUndo.setEnabled(True)
 
     def newImage(self):
         self.pixmap = QPixmap(512, 512)
@@ -199,35 +224,37 @@ class PaintWindow(QMainWindow):
         self.colorButton.setVisible(True)
 
     def colorSet(self):
-        print(self.greenInput.text() == "")
         if self.greenInput.text() == "":
             g = 0
         else:
             g = int(self.greenInput.text())
             if g > 255:
                 g = 255
+                self.greenInput.setText("255")
             if g < 0:
                 g = 0
+                self.greenInput.setText("0")
         if self.redInput.text() == "":
             r = 0
         else:
             r = int(self.redInput.text())
             if r > 255:
                 r = 255
+                self.redInput.setText("255")
             if r < 0:
                 r = 0
+                self.redInput.setText("0")
         if self.blueInput.text() == "":
             b = 0
         else:
             b = int(self.blueInput.text())
             if b > 255:
                 b = 255
+                self.blueInput.setText("255")
             if b < 0:
                 b = 0
+                self.blueInput.setText("0")
 
-        self.blueInput.setText("")
-        self.redInput.setText("")
-        self.greenInput.setText("")
         self.BrushColor = QColor(r, g, b)
         self.greenInput.setEnabled(False)
         self.redInput.setEnabled(False)
@@ -259,29 +286,52 @@ class PaintWindow(QMainWindow):
 
     def redColor(self):
         self.BrushColor = QColor("red")
+        self.redInput.setText("255")
+        self.greenInput.setText("0")
+        self.blueInput.setText("0")
 
     def bluColor(self):
         self.BrushColor = QColor("blue")
+        self.blueInput.setText("255")
+        self.greenInput.setText("0")
+        self.redInput.setText("0")
 
     def grnColor(self):
         self.BrushColor = QColor("green")
+        self.greenInput.setText("255")
+        self.redInput.setText("0")
+        self.blueInput.setText("0")
 
     def blkColor(self):
         self.BrushColor = QColor("black")
+        self.redInput.setText("0")
+        self.greenInput.setText("0")
+        self.blueInput.setText("0")
 
     def whtColor(self):
         self.BrushColor = QColor("white")
+        self.redInput.setText("255")
+        self.greenInput.setText("255")
+        self.blueInput.setText("255")
 
     def doSmth(self, event):
         if event.button() == Qt.LeftButton:
-            self.drawing = True
+            self.actionUndo.setEnabled(True)
+            self.drawing   = True
             self.lastPoint = event.pos()
+            pxm            = self.drawLabel.pixmap()
+            self.lastpxm   = self.drawLabel.pixmap().toImage()
+            self.editMenu.setEnabled(True)
+            qp  = QPainter(pxm)
+            qp.setPen(QPen(self.BrushColor, self.BrushSize, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            qp.drawPoint(self.lastPoint)
+            self.drawLabel.setPixmap(pxm)
 
     def doSmth2(self, event):
         if (event.buttons() and Qt.LeftButton) and self.drawing and self.PixMapAv:
-            pxm = self.drawLabel.pixmap()
-            print(event.pos())
-            qp  = QPainter(pxm)
+            pxm            = self.drawLabel.pixmap()
+            self.editMenu.setEnabled(True)
+            qp             = QPainter(pxm)
             qp.setPen(QPen(self.BrushColor, self.BrushSize, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
             qp.drawLine(self.lastPoint, event.pos())
             self.lastPoint = event.pos()
@@ -292,6 +342,7 @@ def main():
     app = QApplication(sys.argv)
     UIWindow = PaintWindow()
     app.exec_()
+
 
 if __name__ == '__main__':
     main()
