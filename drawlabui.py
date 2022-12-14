@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'drawlabui.ui'
+# Form implementation generated from reading ui file 'DRAWLABUI.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -85,6 +85,12 @@ class Ui_MainWindow(object):
         self.UndoAction.setObjectName("UndoAction")
         self.RedoAction = QtWidgets.QAction(MainWindow)
         self.RedoAction.setObjectName("RedoAction")
+        self.Filler = QtWidgets.QAction(MainWindow)
+        self.Filler.setObjectName("Filler")
+        self.DigitAction = QtWidgets.QAction(MainWindow)
+        self.DigitAction.setObjectName("DigitAction")
+        self.MatrixAction = QtWidgets.QAction(MainWindow)
+        self.MatrixAction.setObjectName("MatrixAction")
         self.FileMenu.addAction(self.FileAction)
         self.FileMenu.addAction(self.OpenAction)
         self.FileMenu.addAction(self.SaveAction)
@@ -97,6 +103,7 @@ class Ui_MainWindow(object):
         self.Brush.addAction(self.BrushSize3)
         self.Brush.addAction(self.BrushSize4)
         self.BrushMenu.addAction(self.Brush.menuAction())
+        self.BrushMenu.addAction(self.Filler)
         self.ColorMenu.addAction(self.WhiteColor)
         self.ColorMenu.addAction(self.BlackColor)
         self.ColorMenu.addAction(self.RedColor)
@@ -106,6 +113,9 @@ class Ui_MainWindow(object):
         self.ColorMenu.addAction(self.InputColor)
         self.EditMenu.addAction(self.UndoAction)
         self.EditMenu.addAction(self.RedoAction)
+        self.EditMenu.addSeparator()
+        self.EditMenu.addAction(self.MatrixAction)
+        self.EditMenu.addAction(self.DigitAction)
         self.menubar.addAction(self.FileMenu.menuAction())
         self.menubar.addAction(self.BrushMenu.menuAction())
         self.menubar.addAction(self.ColorMenu.menuAction())
@@ -126,11 +136,11 @@ class Ui_MainWindow(object):
         self.OpenAction.setText(_translate("MainWindow", "Открыть"))
         self.SaveAction.setText(_translate("MainWindow", "Сохранить файл"))
         self.Pencil.setText(_translate("MainWindow", "Карандаш"))
-        self.BrushSize0.setText(_translate("MainWindow", "Размер 1"))
-        self.BrushSize1.setText(_translate("MainWindow", "Размер 2"))
-        self.BrushSize2.setText(_translate("MainWindow", "Размер 3"))
-        self.BrushSize3.setText(_translate("MainWindow", "Размер 4"))
-        self.BrushSize4.setText(_translate("MainWindow", "Размер 5"))
+        self.BrushSize0.setText(_translate("MainWindow", "2px"))
+        self.BrushSize1.setText(_translate("MainWindow", "4px"))
+        self.BrushSize2.setText(_translate("MainWindow", "6px"))
+        self.BrushSize3.setText(_translate("MainWindow", "8px"))
+        self.BrushSize4.setText(_translate("MainWindow", "10px"))
         self.WhiteColor.setText(_translate("MainWindow", "Белый"))
         self.BlackColor.setText(_translate("MainWindow", "Черный"))
         self.RedColor.setText(_translate("MainWindow", "Красный"))
@@ -142,6 +152,9 @@ class Ui_MainWindow(object):
         self.InputColor.setText(_translate("MainWindow", "Ввести цвет"))
         self.UndoAction.setText(_translate("MainWindow", "Отменить"))
         self.RedoAction.setText(_translate("MainWindow", "Повторить"))
+        self.Filler.setText(_translate("MainWindow", "Заливка"))
+        self.DigitAction.setText(_translate("MainWindow", "Определить цифру"))
+        self.MatrixAction.setText(_translate("MainWindow", "Ввести матрицу"))
 
 
 if __name__ == "__main__":
