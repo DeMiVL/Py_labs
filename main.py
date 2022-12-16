@@ -1,12 +1,11 @@
 from PIL import Image, ImageDraw
 import sys, os
 import drawlabui
-import main2
-from   PyQt5.QtWidgets  import(QMainWindow, QApplication, QScrollArea, QLabel,
-                               QPushButton, QMenu, QAction, QFileDialog,
-                               QLineEdit)
-from   PyQt5.QtGui      import QPixmap, QColor, QIntValidator, QDoubleValidator, QPen, QPainter, QImage
-from   PyQt5.QtCore     import Qt, QPoint
+from PyQt5.QtWidgets import (QMainWindow, QApplication, QScrollArea, QLabel,
+                             QPushButton, QMenu, QAction, QFileDialog,
+                             QLineEdit)
+from PyQt5.QtGui import QPixmap, QColor, QIntValidator, QDoubleValidator, QPen, QPainter, QImage
+from PyQt5.QtCore import Qt, QPoint
 
 
 class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
@@ -17,57 +16,57 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.n = 0
         self.m = 0
 
-        self.scroll      = QScrollArea()
+        self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(False)
 
-        self.editMenu    = self.findChild(QMenu, "EditMenu")
+        self.editMenu = self.findChild(QMenu, "EditMenu")
         self.editMenu.setEnabled(False)
 
-        self.actionUndo  = self.findChild(QAction, "UndoAction")
+        self.actionUndo = self.findChild(QAction, "UndoAction")
         self.actionUndo.triggered.connect(self.undoAction)
         self.actionUndo.setShortcut("Ctrl+Z")
 
-        self.actionRedo  = self.findChild(QAction, "RedoAction")
+        self.actionRedo = self.findChild(QAction, "RedoAction")
         self.actionRedo.triggered.connect(self.redoAction)
         self.actionRedo.setShortcut("Ctrl+Y")
         self.actionRedo.setEnabled(False)
 
-        self.brushMenu   = self.findChild(QMenu, "BrushMenu")
+        self.brushMenu = self.findChild(QMenu, "BrushMenu")
         self.brushMenu.setEnabled(False)
 
-        self.colorMenu   = self.findChild(QMenu, "ColorMenu")
+        self.colorMenu = self.findChild(QMenu, "ColorMenu")
         self.colorMenu.setEnabled(False)
 
-        self.actionNew   = self.findChild(QAction, "FileAction")
+        self.actionNew = self.findChild(QAction, "FileAction")
         self.actionNew.triggered.connect(self.newImage)
         self.actionNew.setShortcut("Ctrl+N")
 
-        self.actionOpen  = self.findChild(QAction, "OpenAction")
+        self.actionOpen = self.findChild(QAction, "OpenAction")
         self.actionOpen.triggered.connect(self.openImage)
         self.actionOpen.setShortcut("Ctrl+O")
 
-        self.whtAction   = self.findChild(QAction, "WhiteColor")
+        self.whtAction = self.findChild(QAction, "WhiteColor")
         self.whtAction.triggered.connect(self.whtColor)
-        self.redAction   = self.findChild(QAction, "RedColor")
+        self.redAction = self.findChild(QAction, "RedColor")
         self.redAction.triggered.connect(self.redColor)
-        self.bluAction   = self.findChild(QAction, "BlueColor")
+        self.bluAction = self.findChild(QAction, "BlueColor")
         self.bluAction.triggered.connect(self.bluColor)
-        self.grnAction   = self.findChild(QAction, "GreenColor")
+        self.grnAction = self.findChild(QAction, "GreenColor")
         self.grnAction.triggered.connect(self.grnColor)
-        self.blkAction   = self.findChild(QAction, "BlackColor")
+        self.blkAction = self.findChild(QAction, "BlackColor")
         self.blkAction.triggered.connect(self.blkColor)
 
-        self.actionSave  = self.findChild(QAction, "SaveAction")
+        self.actionSave = self.findChild(QAction, "SaveAction")
         self.actionSave.triggered.connect(self.saveImage)
         self.actionSave.setShortcut("Ctrl+S")
 
         self.actionClose = self.findChild(QAction, "CloseAction")
         self.actionClose.triggered.connect(self.closeImage)
         self.actionClose.setShortcut("Ctrl+W")
-        
-        #self.actionDigit = self.findChild(QAction, "DigitAction")
-        #self.actionDigit.triggered.connect(self.digitAction)
-        #self.actionDigit.setShortcut("Ctrl+D")
+
+        self.actionDigit = self.findChild(QAction, "DigitAction")
+        self.actionDigit.triggered.connect(self.digitAction)
+        self.actionDigit.setShortcut("Ctrl+D")
 
         self.actionMatrix = self.findChild(QAction, "MatrixAction")
         self.actionMatrix.triggered.connect(self.matrixAction)
@@ -81,7 +80,7 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.actionInputColor.triggered.connect(self.inputColor)
         self.actionInputColor.setShortcut("Ctrl+I")
 
-        self.actionFiller     = self.findChild(QAction, "Filler")
+        self.actionFiller = self.findChild(QAction, "Filler")
         self.actionFiller.triggered.connect(self.fillEvent)
         self.actionFiller.setEnabled(False)
 
@@ -105,21 +104,21 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.actionBrushSize4.triggered.connect(self.pickBrushSize4)
         self.actionBrushSize4.setEnabled(False)
 
-        self.drawLabel  = self.findChild(QLabel, "DrawZone")
+        self.drawLabel = self.findChild(QLabel, "DrawZone")
         self.drawLabel.mousePressEvent = self.doSmth
-        self.drawLabel.mouseMoveEvent  = self.doSmth2
+        self.drawLabel.mouseMoveEvent = self.doSmth2
         self.drawLabel.setMouseTracking(True)
         self.drawLabel.setMaximumSize(2048, 2048)
-        self.drawing    = False
-        self.PixMapAv   = False
+        self.drawing = False
+        self.PixMapAv = False
 
         self.scroll.setWidget(self.drawLabel)
         self.setCentralWidget(self.scroll)
 
-        self.nInput  = QLineEdit(self)
+        self.nInput = QLineEdit(self)
         self.nInput.setFixedWidth(60)
         self.nInput.setFixedHeight(20)
-        self.mInput  = QLineEdit(self)
+        self.mInput = QLineEdit(self)
         self.mInput.setFixedWidth(60)
         self.mInput.setFixedHeight(20)
         self.mInput.setEnabled(False)
@@ -150,10 +149,10 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.MatrixButton.setEnabled(False)
         self.MatrixButton.setVisible(False)
 
-        self.redInput   = QLineEdit(self)
+        self.redInput = QLineEdit(self)
         self.redInput.setFixedWidth(60)
         self.redInput.setFixedHeight(20)
-        self.blueInput  = QLineEdit(self)
+        self.blueInput = QLineEdit(self)
         self.blueInput.setFixedWidth(60)
         self.blueInput.setFixedHeight(20)
         self.greenInput = QLineEdit(self)
@@ -185,12 +184,31 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.redInput.setVisible(False)
         self.colorButton.setVisible(False)
 
-        self.BrushColor    = QColor("black")
-        self.BrushSize     = 4
-        self.FillClick     = False
+        self.BrushColor = QColor("black")
+        self.BrushSize = 4
+        self.FillClick = False
 
         self.setWindowTitle("Паинт имени Миляева Д.В.")
         self.show()
+
+
+    def digitAction(self):
+        ps = self.drawLabel.pixmap().copy()
+        ps = ps.scaled(28, 28, aspectRatioMode = Qt.KeepAspectRatio)
+        ps = ps.toImage()
+        ps.save("TEst_driver_picture_temp_ultra.jpg")
+        po = Image.open("TEst_driver_picture_temp_ultra.jpg")
+        lo = po.load()
+        a  = po.size[0]
+        b  = po.size[1]
+        ab = [[float(0) for i in range(a)] for j in range(b)]
+        go = ImageDraw.Draw(po)
+        for i in range(a):
+            for j in range(b):
+                R        = lo[i, j][0]
+                G        = lo[i, j][1]
+                B        = lo[i, j][2]
+                ab[i][j] = float(R * 299/1000 + G * 587/1000 + B * 114/1000)
 
     def matrixAction(self):
         self.mInput.setEnabled(True)
@@ -235,13 +253,12 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
                 self.B[i][j].setVisible(True)
                 self.B[i][j].setEnabled(True)
         print(4)
-        om = self.drawLabel.pixmap()#.copy()
-        #om.scaled(48, 48, Qt.KeepAspectRatio)
+        om = self.drawLabel.pixmap()  # .copy()
+        # om.scaled(48, 48, Qt.KeepAspectRatio)
         im = om.toImage()
         im.save('burunya_test_drive_ultra.jpg')
         self.ButtonStop.setEnabled(True)
         self.ButtonStop.setVisible(True)
-
 
     def coercion_submission_assimilation(self):
         K1 = 0
@@ -251,15 +268,16 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         for i in range(self.n):
             for j in range(self.m):
                 if self.B[i][j].text() == "":
-                   A[i][j] = float(0)
-                A[i][j] = float(self.B[i][j].text())
+                    A[i][j] = float(0)
+                else:
+                    A[i][j] = float(self.B[i][j].text())
         print(14)
-        image  = Image.open('burunya_test_drive_ultra.jpg')
-        im_1   = image.load()
+        image = Image.open('burunya_test_drive_ultra.jpg')
+        im_1 = image.load()
         weight = image.size[0]
         height = image.size[1]
-        photo  = Image.new(mode="RGB", size=(int(weight), int(height)))
-        draw   = ImageDraw.Draw(photo)
+        photo = Image.new(mode="RGB", size=(int(weight), int(height)))
+        draw = ImageDraw.Draw(photo)
         print(weight, height)
         for k in range(weight):
             for e in range(height):
@@ -314,16 +332,17 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
 
         photo.show()
         photo.save('burunya_test_drive_ultra.jpg')
-        self.pixmap  = QPixmap('burunya_test_drive_ultra.jpg')
+        self.pixmap = QPixmap('burunya_test_drive_ultra.jpg')
         self.drawLabel.setPixmap(self.pixmap)
         self.drawLabel.resize(self.pixmap.size())
         os.remove('burunya_test_drive_ultra.jpg')
 
     def openImage(self):
-        filename = QFileDialog.getOpenFileName(self, "Open File", "", "All Files (*);;PNG Files (*.png);;JPG Files (*.jpg)")
+        filename = QFileDialog.getOpenFileName(self, "Open File", "",
+                                               "All Files (*);;PNG Files (*.png);;JPG Files (*.jpg)")
         if filename == "":
             return
-        self.pixmap  = QPixmap(filename[0])
+        self.pixmap = QPixmap(filename[0])
         self.drawLabel.setPixmap(self.pixmap)
         self.drawLabel.resize(self.pixmap.size())
         self.actionSave.setEnabled(True)
@@ -336,10 +355,11 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.brushMenu.setEnabled(True)
         self.colorMenu.setEnabled(True)
         self.actionFiller.setEnabled(True)
-        self.PixMapAv     = True
+        self.PixMapAv = True
 
     def saveImage(self):
-        filename, _= QFileDialog.getSaveFileName(self, "Save File", "./", "PNG Files (*.png);;JPG Files (*.jpg);;ALL Files (*)")
+        filename, _ = QFileDialog.getSaveFileName(self, "Save File", "./",
+                                                  "PNG Files (*.png);;JPG Files (*.jpg);;ALL Files (*)")
         if filename == "":
             return
         om = self.drawLabel.pixmap()
@@ -369,14 +389,14 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
 
     def undoAction(self):
         self.actionUndo.setEnabled(False)
-        pxm          = QPixmap().fromImage(self.lastpxm)
+        pxm = QPixmap().fromImage(self.lastpxm)
         self.lastpxm = self.drawLabel.pixmap().toImage()
         self.drawLabel.setPixmap(pxm)
         self.actionRedo.setEnabled(True)
 
     def redoAction(self):
         self.actionRedo.setEnabled(False)
-        pxm          = QPixmap().fromImage(self.lastpxm)
+        pxm = QPixmap().fromImage(self.lastpxm)
         self.lastpxm = self.drawLabel.pixmap().toImage()
         self.drawLabel.setPixmap(pxm)
         self.actionUndo.setEnabled(True)
@@ -498,27 +518,27 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
     def doSmth(self, event):
         if event.button() == Qt.LeftButton and not self.FillClick:
             self.actionUndo.setEnabled(True)
-            self.drawing   = True
+            self.drawing = True
             self.lastPoint = event.pos()
-            pxm            = self.drawLabel.pixmap()
-            self.lastpxm   = self.drawLabel.pixmap().toImage()
+            pxm = self.drawLabel.pixmap()
+            self.lastpxm = self.drawLabel.pixmap().toImage()
             self.editMenu.setEnabled(True)
-            qp  = QPainter(pxm)
+            qp = QPainter(pxm)
             qp.setPen(QPen(self.BrushColor, self.BrushSize, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
             qp.drawPoint(self.lastPoint)
             self.drawLabel.setPixmap(pxm)
 
         elif event.button() == Qt.LeftButton and self.FillClick:
-            self.lastpxm   = self.drawLabel.pixmap().toImage()
+            self.lastpxm = self.drawLabel.pixmap().toImage()
             self.editMenu.setEnabled(True)
             self.fillThatShit(event)
             self.FillClick = False
 
     def doSmth2(self, event):
         if (event.buttons() and Qt.LeftButton) and self.drawing and self.PixMapAv:
-            pxm            = self.drawLabel.pixmap()
+            pxm = self.drawLabel.pixmap()
             self.editMenu.setEnabled(True)
-            qp             = QPainter(pxm)
+            qp = QPainter(pxm)
             qp.setPen(QPen(self.BrushColor, self.BrushSize, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
             qp.drawLine(self.lastPoint, event.pos())
             self.lastPoint = event.pos()
@@ -529,8 +549,8 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
             self.drawing = False
 
     def fillThatShit(self, event):
-        image           = self.drawLabel.pixmap().toImage()
-        w, h            = image.width(), image.height()
+        image = self.drawLabel.pixmap().toImage()
+        w, h = image.width(), image.height()
         x, y = event.x(), event.y()
         target_color = image.pixel(x, y)
 
@@ -543,13 +563,13 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
             for x, y in [(1, 0), (0, 1), (-1, 0), (0, -1)]:
                 xx, yy = cx + x, cy + y
                 if (xx >= 0 and xx < w and
-                    yy >= 0 and yy < h and
-                    (xx, yy) not in have_seen):
-
+                        yy >= 0 and yy < h and
+                        (xx, yy) not in have_seen):
                     points.append((xx, yy))
                     have_seen.add((xx, yy))
 
             return points
+
         pxm = self.drawLabel.pixmap()
         p = QPainter(pxm)
         p.setPen(QPen(self.BrushColor))
