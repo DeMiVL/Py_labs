@@ -249,7 +249,7 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.Y_1 = None
         pxm = self.drawLabel.pixmap()
         paint = QPainter(pxm)
-        paint.setPen(QPen(QColor('black'), 1, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+        paint.setPen(QPen(self.BrushColor, 1, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
         paint.setFont(QFont("Arial", fs))
         paint.drawText(x, y, text)
         self.drawLabel.setPixmap(pxm)
