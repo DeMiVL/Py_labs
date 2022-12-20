@@ -5,16 +5,16 @@ import drawlabui
 from   PyQt5.QtWidgets  import(QMainWindow, QApplication, QScrollArea, QLabel,
                                QPushButton, QMenu, QAction, QFileDialog,
                                QLineEdit)
-from   PyQt5.QtGui      import QPixmap, QColor, QIntValidator, QDoubleValidator, QPen, QPainter, QImage
+from   PyQt5.QtGui      import QPixmap, QColor, QIntValidator, QDoubleValidator, QPen, QPainter, QImage, QFont
 from   PyQt5.QtCore     import Qt, QPoint
 
-from keras.models import load_model
-import keras.utils
+#from keras.models import load_model
+#import keras.utils
 
-def minvalue(list):
-    min_val = max(list)
-    min_ind = list.index(min_val)
-    return min_ind
+#def minvalue(list):
+#    min_val = max(list)
+#    min_ind = list.index(min_val)
+#    return min_ind
 
 class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
     def __init__(self):
@@ -100,8 +100,8 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.actionFiller.triggered.connect(self.fillEvent)
         self.actionFiller.setEnabled(False)
 
-        self.digitAction = self.findChild(QAction, "DigitAction")
-        self.digitAction.triggered.connect(self.digitEvent)
+        #self.digitAction = self.findChild(QAction, "DigitAction")
+        #self.digitAction.triggered.connect(self.digitEvent)
 
         self.actionBrushSize0 = self.findChild(QAction, "BrushSize0")
         self.actionBrushSize0.triggered.connect(self.pickBrushSize0)
@@ -122,6 +122,21 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.actionBrushSize4 = self.findChild(QAction, "BrushSize4")
         self.actionBrushSize4.triggered.connect(self.pickBrushSize4)
         self.actionBrushSize4.setEnabled(False)
+
+        self.AddImages = self.findChild(QAction, "ActAddIm")
+        self.AddImages.triggered.connect(self.AddPictures)
+
+        self.SubImages = self.findChild(QAction, "ActSubIM")
+        self.SubImages.triggered.connect(self.SubPictures)
+
+        self.DivImages = self.findChild(QAction, "actionDIvIms")
+        self.DivImages.triggered.connect(self.DivPictures)
+
+        self.MulImages = self.findChild(QAction, "actionMulIMs")
+        self.MulImages.triggered.connect(self.MulPictures)
+
+        self.TextAdd = self.findChild(QAction, "action_text")
+        self.TextAdd.triggered.connect(self.AddText)
 
         self.drawLabel  = self.findChild(QLabel, "DrawZone")
         self.drawLabel.mousePressEvent = self.doSmth
@@ -207,11 +222,228 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.BrushSize   = 4
         self.FillClick   = False
         
-        self.model = load_model('NeuronNet.h5')
+        #self.model = load_model('NeuronNet.h5')
         
         self.setWindowTitle("Паинт имени Миляева Д.В.")
         self.show()
 
+    def AddLine(self):
+        text = self.Text.text()
+        x    = int(self.X_1.text())
+        y    = int(self.Y_1.text())
+        fs   = int(self.FontSize.text())
+        self.layout().removeWidget(self.Text)
+        self.Text.deleteLater()
+        self.Text = None
+        self.layout().removeWidget(self.FontSize)
+        self.FontSize.deleteLater()
+        self.FontSize = None
+        self.layout().removeWidget(self.textButton)
+        self.textButton.deleteLater()
+        self.textButton = None
+        self.layout().removeWidget(self.X_1)
+        self.X_1.deleteLater()
+        self.X_1 = None
+        self.layout().removeWidget(self.Y_1)
+        self.Y_1.deleteLater()
+        self.Y_1 = None
+        pxm = self.drawLabel.pixmap()
+        paint = QPainter(pxm)
+        paint.setPen(QPen(QColor('black'), 1, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+        paint.setFont(QFont("Arial", fs))
+        paint.drawText(x, y, text)
+        self.drawLabel.setPixmap(pxm)
+
+    def AddText(self):
+        self.X_1  = QLineEdit(self)
+        self.Y_1  = QLineEdit(self)
+        self.Text = QLineEdit(self)
+        self.X_1.setValidator(QIntValidator(0, self.drawLabel.width()))
+        self.Y_1.setValidator(QIntValidator(0, self.drawLabel.height()))
+        self.X_1.setVisible(True)
+        self.FontSize = QLineEdit(self)
+        self.FontSize.setVisible(True)
+        self.FontSize.move(600, 40)
+        self.FontSize.setFixedHeight(40)
+        self.FontSize.setFixedWidth(60)
+        self.X_1.move(600, 80)
+        self.Y_1.move(600, 160)
+        self.Text.move(600, 240)
+        self.X_1.setFixedHeight(40)
+        self.X_1.setFixedWidth(60)
+        self.Y_1.setFixedHeight(40)
+        self.Y_1.setFixedWidth(60)
+        self.Text.setFixedHeight(40)
+        self.Text.setFixedWidth(240)
+        self.Y_1.setVisible(True)
+        self.Text.setVisible(True)
+        self.textButton = QPushButton(self)
+        self.textButton.move(600, 300)
+        self.textButton.setFixedHeight(40)
+        self.textButton.setFixedWidth(240)
+        self.textButton.setText('Ввод строки')
+        self.textButton.setVisible(True)
+        self.textButton.clicked.connect(self.AddLine)
+
+    def AddPictures(self):
+        filename = QFileDialog.getOpenFileName(self, "Open File", "", "All Files (*);;PNG Files (*.png);;JPG Files (*.jpg)")
+        if filename == "":
+            return
+        pxm1 = self.drawLabel.pixmap()
+        pxm2  = QPixmap(filename[0])
+        if pxm1.height() != pxm2.height() or pxm1.width() != pxm2.width():
+            print("Sizes are not equal")
+            return
+        im  = pxm1.toImage()
+        im2 = pxm2.toImage()
+        a   = pxm1.width()
+        b   = pxm1.height()
+        qp  = QPainter(pxm1)
+        for i in range(a):
+            for j in range(b):
+                colord = im.pixel(i, j)
+                colorp = im2.pixel(i, j)
+                colorm = QColor(colord).getRgb()
+                colort = QColor(colorp).getRgb()
+                R = colorm[0] + colort[0]
+                G = colorm[1] + colort[1]
+                B = colorm[2] + colort[2]
+                if R > 255:
+                    R = 255
+                if G > 255:
+                    G = 255
+                if B > 255:
+                    B = 255
+                if R < 0:
+                    R = 0
+                if G < 0:
+                    G = 0
+                if B < 0:
+                    B = 0
+                qp.setPen(QPen(QColor(R, G, B), 1, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+                qp.drawPoint(i, j)
+        self.drawLabel.setPixmap(pxm1)
+    
+    def SubPictures(self):
+        filename = QFileDialog.getOpenFileName(self, "Open File", "",
+                                               "All Files (*);;PNG Files (*.png);;JPG Files (*.jpg)")
+        if filename == "":
+            return
+        pxm1 = self.drawLabel.pixmap()
+        pxm2 = QPixmap(filename[0])
+        if pxm1.height() != pxm2.height() or pxm1.width() != pxm2.width():
+            print("Sizes are not equal")
+            return
+        im = pxm1.toImage()
+        im2 = pxm2.toImage()
+        a = pxm1.width()
+        b = pxm1.height()
+        qp = QPainter(pxm1)
+        for i in range(a):
+            for j in range(b):
+                colord = im.pixel(i, j)
+                colorp = im2.pixel(i, j)
+                colorm = QColor(colord).getRgb()
+                colort = QColor(colorp).getRgb()
+                R = colorm[0] - colort[0]
+                G = colorm[1] - colort[1]
+                B = colorm[2] - colort[2]
+                if R > 255:
+                    R = 255
+                if G > 255:
+                    G = 255
+                if B > 255:
+                    B = 255
+                if R < 0:
+                    R = 0
+                if G < 0:
+                    G = 0
+                if B < 0:
+                    B = 0
+                qp.setPen(QPen(QColor(R, G, B), 1, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+                qp.drawPoint(i, j)
+        self.drawLabel.setPixmap(pxm1)
+    
+    def DivPictures(self):
+        filename = QFileDialog.getOpenFileName(self, "Open File", "",
+                                               "All Files (*);;PNG Files (*.png);;JPG Files (*.jpg)")
+        if filename == "":
+            return
+        pxm1 = self.drawLabel.pixmap()
+        pxm2 = QPixmap(filename[0])
+        if pxm1.height() != pxm2.height() or pxm1.width() != pxm2.width():
+            print("Sizes are not equal")
+            return
+        im = pxm1.toImage()
+        im2 = pxm2.toImage()
+        a = pxm1.width()
+        b = pxm1.height()
+        qp = QPainter(pxm1)
+        for i in range(a):
+            for j in range(b):
+                colord = im.pixel(i, j)
+                colorp = im2.pixel(i, j)
+                colorm = QColor(colord).getRgb()
+                colort = QColor(colorp).getRgb()
+                R = int((colorm[0] + 1)/ (colort[0] + 1) - 1)
+                G = int((colorm[1] + 1)/ (colort[1] + 1) - 1)
+                B = int((colorm[2] + 1)/ (colort[2] + 1) - 1)
+                if R > 255:
+                    R = 255
+                if G > 255:
+                    G = 255
+                if B > 255:
+                    B = 255
+                if R < 0:
+                    R = 0
+                if G < 0:
+                    G = 0
+                if B < 0:
+                    B = 0
+                qp.setPen(QPen(QColor(R, G, B), 1, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+                qp.drawPoint(i, j)
+        self.drawLabel.setPixmap(pxm1)
+    
+    def MulPictures(self):
+        filename = QFileDialog.getOpenFileName(self, "Open File", "",
+                                               "All Files (*);;PNG Files (*.png);;JPG Files (*.jpg)")
+        if filename == "":
+            return
+        pxm1 = self.drawLabel.pixmap()
+        pxm2 = QPixmap(filename[0])
+        if pxm1.height() != pxm2.height() or pxm1.width() != pxm2.width():
+            print("Sizes are not equal")
+            return
+        im = pxm1.toImage()
+        im2 = pxm2.toImage()
+        a = pxm1.width()
+        b = pxm1.height()
+        qp = QPainter(pxm1)
+        for i in range(a):
+            for j in range(b):
+                colord = im.pixel(i, j)
+                colorp = im2.pixel(i, j)
+                colorm = QColor(colord).getRgb()
+                colort = QColor(colorp).getRgb()
+                R = int(colorm[0] * colort[0] / 255)
+                G = int(colorm[1] * colort[1] / 255)
+                B = int(colorm[2] * colort[2] / 255)
+                if R > 255:
+                    R = 255
+                if G > 255:
+                    G = 255
+                if B > 255:
+                    B = 255
+                if R < 0:
+                    R = 0
+                if G < 0:
+                    G = 0
+                if B < 0:
+                    B = 0
+                qp.setPen(QPen(QColor(R, G, B), 1, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+                qp.drawPoint(i, j)
+        self.drawLabel.setPixmap(pxm1)
+    
     def antiDigitEvent(self):
         self.layout().removeWidget(self.digitAnti)
         self.digitAnti.deleteLater()
@@ -222,7 +454,7 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
 
     def digitEvent(self):
         pxm   = self.drawLabel.pixmap().copy()
-        pxm   = pxm.scaled(28, 28)#, Qt.KeepAspectRatio)
+        pxm   = pxm.scaled(28, 28)
         im    = pxm.toImage()
         im.save("Slovo.jpg", "JPG")
         im    = Image.open("Slovo.jpg")
@@ -230,7 +462,6 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         im_ar = im_ar[:, :, 0]
         im_ar = im_ar.reshape((1, 28 * 28))
         im_ar = im_ar.astype('float32') / 255
-        #self.model = load_model('NeuronNet.h5')
         train_images = [im_ar]
         ints  = self.model.predict(train_images)
         into  = len(ints[0])
@@ -254,8 +485,6 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.digitAnti.setText("Убрать цифру")
         self.digitAnti.clicked.connect(self.antiDigitEvent)
         print(m)
-        #im.show()
-        #os.remove("Slovo.jpg")
 
     def sepiaAcTAction(self):
         if self.GSFACTORINPUT.text() == "":
@@ -272,7 +501,7 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.layout().removeWidget(self.GSBUTTON)
         self.GSBUTTON.deleteLater()
         self.GSBUTTON = None
-        pxm = self.drawLabel.pixmap()#.copy()
+        pxm = self.drawLabel.pixmap()
         im  = pxm.toImage()
         a   = pxm.width()
         b   = pxm.height()
@@ -287,13 +516,9 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
                 C = int((0.3 * R) + (0.59 * G) + (0.11 * B))
                 if C > 255:
                     C == 255
-                # print(i, j, '{', R, G, B, '}', C)
                 qp.setPen(QPen(QColor(int(C * factor + (1 - factor) * R), int(C * factor + (1 - factor) * G), int(C * factor + (1 - factor) * B)), 1, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
                 qp.drawPoint(i, j)
-        # print(120)
-        # pxm = pxm.fromImage(im)
         self.drawLabel.setPixmap(pxm)
-        #self.pixmap = self.drawLabel.pixmap()
 
     def sepiaAction(self):
         self.GSBUTTON = QPushButton(self)
@@ -352,13 +577,9 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
                     C = 0
                 else:
                     C = 255
-                # print(i, j, '{', R, G, B, '}', C)
                 qp.setPen(QPen(QColor(int(C * factor + (1 - factor) * R), int(C * factor + (1 - factor) * G), int(C * factor + (1 - factor) * B)), 1, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
                 qp.drawPoint(i, j)
-        # print(120)
-        # pxm = pxm.fromImage(im)
         self.drawLabel.setPixmap(pxm)
-        #self.pixmap = self.drawLabel.pixmap()
 
     def bwAction(self):
         self.GSBUTTON = QPushButton(self)
@@ -402,7 +623,7 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.layout().removeWidget(self.GSBUTTON)
         self.GSBUTTON.deleteLater()
         self.GSBUTTON = None
-        pxm = self.drawLabel.pixmap()#.copy()
+        pxm = self.drawLabel.pixmap()
         im = pxm.toImage()
         a = pxm.width()
         b = pxm.height()
@@ -549,7 +770,7 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.layout().removeWidget(self.GSBUTTON)
         self.GSBUTTON.deleteLater()
         self.GSBUTTON = None
-        pxm = self.drawLabel.pixmap()#.copy()
+        pxm = self.drawLabel.pixmap()
         im = pxm.toImage()
         a = pxm.width()
         b = pxm.height()
@@ -564,13 +785,9 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
                 TR = 255 - colorm[0]
                 TG = 255 - colorm[1]
                 TB = 255 - colorm[2]
-
-                # print(i, j, TR, TG, TB)
                 qp.setPen(QPen(QColor(int(TR * factor + (1 - factor) * R), int(TG * factor + (1 - factor) * G), int(TB * factor + (1 - factor) * B)), 1, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
                 qp.drawPoint(i, j)
-        # print(120)
         self.drawLabel.setPixmap(pxm)
-        #self.pixmap = self.drawLabel.pixmap()
 
     def ngAction(self):
         self.GSBUTTON = QPushButton(self)
@@ -610,16 +827,14 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
         self.MatrixButton.setVisible(False)
         self.n = int(self.nInput.text())
         self.m = int(self.mInput.text())
-        #print(self.n, self.m)
+        
         self.mInput.setEnabled(False)
         self.mInput.setVisible(False)
         self.nInput.setEnabled(False)
         self.nInput.setVisible(False)
 
-        #print(1)
-        #print(2)
         self.B = [[QLineEdit(self) for i in range(self.m)] for j in range(self.n)]
-        #print(3)
+        
         for i in range(self.n):
             for j in range(self.m):
                 self.B[i][j].setFixedWidth(20)
@@ -628,9 +843,9 @@ class PaintWindow(QMainWindow, drawlabui.Ui_MainWindow):
                 self.B[i][j].setValidator(QDoubleValidator(-100, 100, 2))
                 self.B[i][j].setVisible(True)
                 self.B[i][j].setEnabled(True)
-        #print(4)
+        
         om = self.drawLabel.pixmap()#.copy()
-        #om.scaled(48, 48, Qt.KeepAspectRatio)
+        
         im = om.toImage()
         im.save('burunya_test_drive_ultra.jpg', "JPG")
         self.ButtonStop.setEnabled(True)
